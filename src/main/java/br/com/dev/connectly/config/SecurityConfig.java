@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import jakarta.servlet.DispatcherType;
 
 @Configuration
 public class SecurityConfig {
@@ -20,8 +21,9 @@ public class SecurityConfig {
 		
 		http.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/users").permitAll()
-				.anyRequest().authenticated());
+			    .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+			    .requestMatchers("/users", "/users/**", "/error").permitAll()
+			    .anyRequest().authenticated());
 		
 		return http.build();
 	}

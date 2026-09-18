@@ -1,5 +1,6 @@
 package br.com.dev.connectly.service;
 
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +8,7 @@ import br.com.dev.connectly.dto.UserRequestDTO;
 import br.com.dev.connectly.dto.UserResponseDTO;
 import br.com.dev.connectly.entity.Users;
 import br.com.dev.connectly.exception.UserAlreadyExistsException;
+import br.com.dev.connectly.exception.UserNotFoundException;
 import br.com.dev.connectly.repository.UserRepository;
 
 @Service
@@ -51,4 +53,18 @@ public class UserService {
 				);
 		
 	}
+	
+	public UserResponseDTO findById(Long id) {
+
+		Users user = userRepository.findById(id)
+		        .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+	    return new UserResponseDTO(
+	            user.getId(),
+	            user.getUsername(),
+	            user.getEmail()
+	    );
+	}
 }
+
+	
