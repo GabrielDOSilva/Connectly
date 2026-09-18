@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import br.com.dev.connectly.dto.UserRequestDTO;
 import br.com.dev.connectly.dto.UserResponseDTO;
 import br.com.dev.connectly.entity.Users;
+import br.com.dev.connectly.exception.UserAlreadyExistsException;
 import br.com.dev.connectly.repository.UserRepository;
 
 @Service
@@ -19,15 +20,20 @@ public class UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
-	public Users createUser(Users user) {
-		
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encodedPassword);
-		
-		return userRepository.save(user);
-	}
+
 	
 	public UserResponseDTO createUser(UserRequestDTO request) {
+		
+		if
+		(userRepository.existsByUsername(request.getUsername())) {
+			throw new
+			UserAlreadyExistsException("Username already exists");
+		}
+		if
+		(userRepository.existsByEmail(request.getEmail())) {
+			throw new
+			UserAlreadyExistsException("Email already exists");
+		}
 		
 		Users user = new Users();
 		
