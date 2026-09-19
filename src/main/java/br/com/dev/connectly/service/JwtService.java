@@ -1,6 +1,7 @@
 package br.com.dev.connectly.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import javax.crypto.SecretKey;
 
@@ -20,6 +21,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .claim("username", username)
+                .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(getSigningKey())
                 .compact();
     }
