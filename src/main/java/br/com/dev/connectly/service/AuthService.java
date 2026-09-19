@@ -14,13 +14,15 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, JwtService jwtService) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public LoginResponseDTO login(LoginRequestDTO request) {
@@ -33,7 +35,9 @@ public class AuthService {
             throw new InvalidCredentialsException(
                     "Invalid username or password");
         }
+        
+        String token = jwtService.generateToken(user.getUsername());
 
-        return new LoginResponseDTO("TEMPORARY_TOKEN");
+        return new LoginResponseDTO(token);
     }
 }
