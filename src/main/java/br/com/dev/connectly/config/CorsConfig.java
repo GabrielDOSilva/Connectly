@@ -17,8 +17,9 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "http://127.0.0.1:5500"
-        ));
+        	    "http://127.0.0.1:5500",
+        	    "https://connectly-frontend-tawny.vercel.app"
+        	));
 
         configuration.setAllowedMethods(List.of(
                 "GET",
