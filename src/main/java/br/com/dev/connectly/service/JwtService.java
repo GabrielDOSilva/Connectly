@@ -20,7 +20,7 @@ public class JwtService {
     public String generateToken(String username) {
 
         return Jwts.builder()
-                .claim("username", username)
+        		.subject(username)
                 .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(getSigningKey())
                 .compact();
@@ -33,7 +33,7 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .get("username", String.class);
+                .getSubject();
     }
 
     private SecretKey getSigningKey() {
