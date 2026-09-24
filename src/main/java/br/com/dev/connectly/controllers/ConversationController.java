@@ -1,35 +1,48 @@
 package br.com.dev.connectly.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.dev.connectly.dto.ConversationRequestDTO;
-import br.com.dev.connectly.entity.Conversation;
-import br.com.dev.connectly.service.ConversationService;
+import br.com.dev.connectly.service.ConversationRequestService;
+import br.com.dev.connectly.dto.ConversationRequestResponseDTO;
+
+
+
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/conversations")
+@RequestMapping("/conversation-requests")
 public class ConversationController {
 
-    private final ConversationService conversationService;
+	private final ConversationRequestService conversationRequestService;
 
-    public ConversationController(ConversationService conversationService) {
-        this.conversationService = conversationService;
-    }
+	public ConversationController(ConversationRequestService conversationRequestService) {
+	    this.conversationRequestService = conversationRequestService;
+	}
 
     @PostMapping
-    public ResponseEntity<Conversation> create(
+    public ResponseEntity<Void> create(
             @Valid @RequestBody ConversationRequestDTO request) {
 
-        Conversation conversation = conversationService.createConversation(
-                request.getFirstUserId(),
-                request.getSecondUserId()
-        );
+    	conversationRequestService.createRequest(request);
+    	
+    	return ResponseEntity.noContent().build();
 
-        return ResponseEntity.ok(conversation);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<ConversationRequestResponseDTO>> findPendingRequests() {
+
+        List<ConversationRequestResponseDTO> requests =
+                conversationRequestService.findPendingRequests();
+
+        return ResponseEntity.ok(requests);
     }
 }
