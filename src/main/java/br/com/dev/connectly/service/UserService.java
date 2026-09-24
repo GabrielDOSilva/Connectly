@@ -16,10 +16,12 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final EmailCryptoService emailCryptoService;
 	
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailCryptoService emailCryptoService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.emailCryptoService = emailCryptoService;
 	}
 	
 
@@ -31,8 +33,11 @@ public class UserService {
 			throw new
 			UserAlreadyExistsException("Username already exists");
 		}
+		
+		String emailHash = emailCryptoService.generateHash(request.getEmail());
+		
 		if
-		(userRepository.existsByEmail(request.getEmail())) {
+		(userRepository.existsByEmailHash(emailHash)) {
 			throw new
 			UserAlreadyExistsException("Email already exists");
 		}
@@ -40,8 +45,8 @@ public class UserService {
 		Users user = new Users();
 		
 		user.setUsername(request.getUsername());
-		user.setEmail(request.getEmail());
-		
+		user.setEmailEncrypted(emailCryptoService.encrypt(request.getEmail()));
+		user.setEmailHash(emailHash);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		
 		Users savedUser = userRepository.save(user);
@@ -49,7 +54,7 @@ public class UserService {
 		return new UserResponseDTO(
 				savedUser.getId(),
 				savedUser.getUsername(),
-				savedUser.getEmail()
+				emailCryptoService.decrypt(savedUser.getEmailEncrypted())
 				);
 		
 	}
@@ -62,7 +67,7 @@ public class UserService {
 	    return new UserResponseDTO(
 	            user.getId(),
 	            user.getUsername(),
-	            user.getEmail()
+	            emailCryptoService.decrypt(user.getEmailEncrypted())
 	    );
 	}
 }
