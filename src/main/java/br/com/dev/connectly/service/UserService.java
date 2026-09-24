@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.dev.connectly.dto.UserRequestDTO;
 import br.com.dev.connectly.dto.UserResponseDTO;
+import br.com.dev.connectly.dto.UserSearchResponseDTO;
 import br.com.dev.connectly.entity.Users;
 import br.com.dev.connectly.exception.UserAlreadyExistsException;
 import br.com.dev.connectly.exception.UserNotFoundException;
@@ -22,6 +23,13 @@ public class UserService {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.emailCryptoService = emailCryptoService;
+	}
+	
+	public UserSearchResponseDTO findByUsername(String username) {
+		
+		Users user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+		
+		return new UserSearchResponseDTO(user.getUsername());
 	}
 	
 
@@ -59,17 +67,6 @@ public class UserService {
 		
 	}
 	
-	public UserResponseDTO findById(Long id) {
-
-		Users user = userRepository.findById(id)
-		        .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-	    return new UserResponseDTO(
-	            user.getId(),
-	            user.getUsername(),
-	            emailCryptoService.decrypt(user.getEmailEncrypted())
-	    );
-	}
 }
 
 	
