@@ -86,4 +86,38 @@ public class ConversationRequestService {
 	            .toList();
 	}
 	
+	public ConversationRequest findById(Long id) {
+
+	    return conversationRequestRepository.findById(id)
+	            .orElseThrow(() ->
+	                    new IllegalArgumentException("Request not found"));
+	}
+	
+	public void acceptRequest(Long id) {
+
+	    ConversationRequest request = findById(id);
+
+	    String username = SecurityContextHolder.getContext()
+	            .getAuthentication()
+	            .getName();
+
+	    Users receiver = userRepository.findByUsername(username)
+	            .orElseThrow(() ->
+	                    new UserNotFoundException("User not found"));
+	    
+	    if (!request.getReceiver().getId().equals(receiver.getId())) {
+	        throw new IllegalArgumentException(
+	                "You are not allowed to accept this request");
+	    }
+	    
+	    if (request.getStatus() != ConversationRequestStatus.PENDING) {
+	        throw new IllegalArgumentException(
+	                "Request is no longer pending");
+	    }
+	    
+	    request.setStatus(ConversationRequestStatus.ACCEPTED);
+
+	    conversationRequestRepository.save(request);
+	}
+	
 }
